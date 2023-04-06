@@ -3,6 +3,8 @@
 (true|false) "BOOLEAN_LITERAL"
 \+ "+"
 \* "*"
+\< "LESS_THAN"
+> "GREATER_THAN"
 \( "("
 \) ")"
 \{ "{"
@@ -13,5 +15,6 @@
 fun "FUNCTION"
 let "LET" 
 return "RETURN"
+println "PRINT_LN" 
 [a-zA-Z0-9_]+ "IDENTIFIER"
 [\t ]+ ;

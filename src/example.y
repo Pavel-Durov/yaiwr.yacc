@@ -12,6 +12,7 @@ statement -> Result<AstNode, ()>:
   expression_statement { $1 }
   | function_definition { $1 }
   | jump_statement { $1 }
+  | builtins { $1 }
 	;
 
 jump_statement -> Result<AstNode, ()>:
@@ -28,8 +29,20 @@ expression -> Result<AstNode, ()>:
   | expression ',' assignment_expression { $1 }
 	;
 
-assignment_expression -> Result<AstNode, ()>:
+
+relational_expression -> Result<AstNode, ()>: 
 	additive_expression { $1 }
+	| relational_expression 'LESS_THAN' additive_expression {
+    Ok(AstNode::LessThan{ lhs: Box::new($1?), rhs: Box::new($3?) }) 
+  }
+	| relational_expression 'GREATER_THAN' additive_expression {
+    Ok(AstNode::GreaterThan{ lhs: Box::new($1?), rhs: Box::new($3?) })
+  }
+	;
+
+
+assignment_expression -> Result<AstNode, ()>:
+	relational_expression { $1 }
 	| "LET" unary_expression "=" assignment_expression {
     match $2.map_err(|_| ())? {
       AstNode::ID { value } => {
@@ -119,6 +132,10 @@ function_definition -> Result<AstNode, ()>:
         }) 
      }
     ;
+
+builtins -> Result<AstNode, ()>:
+    "PRINT_LN" "(" expression ")" { Ok(AstNode::PrintLn{ rhs: Box::new($3?) }) };
+
 %%
 use crate::ast::AstNode;
 
