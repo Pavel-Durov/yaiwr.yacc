@@ -10,6 +10,8 @@ use lrpar::lrpar_mod;
 lrlex_mod!("example.l");
 lrpar_mod!("example.y");
 
+pub mod ast;
+
 fn main() {
     env_logger::init();
     let stdin = io::stdin();
