@@ -45,7 +45,4 @@ pub enum AstNode {
         rhs: Box<AstNode>,
     },
     Empty,
-    Inc {
-        
-    }
 }
