@@ -1,16 +1,22 @@
 
-%start statements
+%start statement_list
 %%
 
-statements -> Result<Vec<AstNode>, ()>:
-    statements statement { append($1.map_err(|_| ())?, $2.map_err(|_| ())?)  }
+statement_list -> Result<Vec<AstNode>, ()>:
+    statement_list statement { append($1.map_err(|_| ())?, $2.map_err(|_| ())?)  }
   | { Ok(vec![]) }
   ;
 
 
 statement -> Result<AstNode, ()>:
   expression_statement { $1 }
+  | function_definition { $1 }
+  | jump_statement { $1 }
 	;
+
+jump_statement -> Result<AstNode, ()>:
+	"RETURN" expression ";" { Ok(AstNode::Return{ block: Box::new($2?) }) }
+  ;
 
 expression_statement -> Result<AstNode, ()>:
   ';' { Ok(AstNode::Empty{}) }
@@ -57,14 +63,29 @@ postfix_expression -> Result<AstNode, ()>:
 	primary_expression { $1 }
   | postfix_expression '(' ')' { 
     match $1.map_err(|_| ())? {
-      AstNode::ID { value } => Ok(AstNode::FunctionCall{ id: value, args: vec![] }),
+      AstNode::ID { value: id } => Ok(AstNode::FunctionCall{ id, args: vec![] }),
+      _ => Err(())
+    }
+   }
+  | postfix_expression '(' argument_expression_list ')' { 
+    match $1.map_err(|_| ())? {
+      AstNode::ID { value: id } => Ok(AstNode::FunctionCall{ id, args: $3.map_err(|_| ())? }),
       _ => Err(())
     }
    }
   ;
 
+argument_expression_list -> Result<Vec<AstNode>, ()>:
+	assignment_expression {  Ok(vec![$1.map_err(|_| ())?]) }
+	| argument_expression_list ',' assignment_expression { append($1.map_err(|_| ())?, $3.map_err(|_| ())?)  }
+	;
+  
+id -> Result<AstNode, ()>:
+  "IDENTIFIER" { Ok(AstNode::ID { value: $lexer.span_str(($1.map_err(|_| ())?).span()).to_string() }) }
+  ;
+
 primary_expression -> Result<AstNode, ()>:
-    "IDENTIFIER" { Ok(AstNode::ID { value: $lexer.span_str(($1.map_err(|_| ())?).span()).to_string() }) }
+    id { $1 }
     |  '(' expression ')' { $2 }
     | literals { $1 }
     ;
@@ -74,7 +95,30 @@ literals -> Result<AstNode, ()>:
     | "BOOLEAN_LITERAL" { parse_boolean($lexer.span_str(($1.map_err(|_| ())?).span())) }
     ;
 
+param_list -> Result<Vec<AstNode>, ()>:
+    param_list ',' id { append($1.map_err(|_| ())?, $3.map_err(|_| ())?) }
+    | id { Ok(vec![$1.map_err(|_| ())?]) }
+    ;
 
+function_definition -> Result<AstNode, ()>:
+    "FUNCTION" "IDENTIFIER" "(" ")" "{" statement_list "}" { 
+        let id = $2.map_err(|_| ())?;
+        Ok(AstNode::Function{ 
+            id: $lexer.span_str(id.span()).to_string(),
+            params: vec![],
+            block: $6?
+        }) 
+     }
+    | 
+    "FUNCTION" "IDENTIFIER" "(" param_list ")" "{" statement_list "}" { 
+        let id = $2.map_err(|_| ())?;
+        Ok(AstNode::Function{ 
+            id: $lexer.span_str(id.span()).to_string(),
+            params: $4.map_err(|_| ())?,
+            block: $7?
+        }) 
+     }
+    ;
 %%
 use crate::ast::AstNode;
 

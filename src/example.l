@@ -7,11 +7,11 @@
 \) ")"
 \{ "{"
 \} "}"
-
-fun "FUNCTION"
 ; ";"
 , ","
 = "="
+fun "FUNCTION"
 let "LET" 
+return "RETURN"
 [a-zA-Z0-9_]+ "IDENTIFIER"
 [\t ]+ ;

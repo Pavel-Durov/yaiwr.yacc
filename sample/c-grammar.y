@@ -38,6 +38,7 @@ postfix_expression
 	| postfix_expression DEC_OP
 	;
 
+// argument_expression_list -> Result<AstNode, ()>:
 argument_expression_list
 	: assignment_expression
 	| argument_expression_list ',' assignment_expression
@@ -164,6 +165,7 @@ constant_expression
 	: conditional_expression
 	;
 
+declaration  -> Result<AstNode, ()>:
 declaration
 	: declaration_specifiers ';'
 	| declaration_specifiers init_declarator_list ';'
@@ -368,6 +370,7 @@ labeled_statement
 	| DEFAULT ':' statement
 	;
 
+// compound_statement -> Result<AstNode, ()>:
 compound_statement
 	: '{' '}'
 	| '{' statement_list '}'
@@ -375,6 +378,7 @@ compound_statement
 	| '{' declaration_list statement_list '}'
 	;
 
+// declaration_list -> Result<AstNode, ()>:
 declaration_list
 	: declaration
 	| declaration_list declaration
@@ -421,6 +425,7 @@ external_declaration
 	| declaration
 	;
 
+// function_definition -> Result<AstNode, ()>:
 function_definition
 	: declaration_specifiers declarator declaration_list compound_statement
 	| declaration_specifiers declarator compound_statement
