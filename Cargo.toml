@@ -1,0 +1,21 @@
+[package]
+name = "example"
+version = "0.0.1"
+authors = ["Pavel Durov"]
+edition = "2021"
+
+[[bin]]
+doc = false
+name = "example"
+
+[build-dependencies]
+cfgrammar = "0.13"
+lrlex = "0.13.1"
+lrpar = "0.13.1"
+
+[dependencies]
+cfgrammar = "0.13"
+lrlex = "0.13.1"
+lrpar = "0.13.1"
+log = "0.4.0"
+env_logger = "0.10.0"
