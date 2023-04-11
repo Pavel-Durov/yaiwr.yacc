@@ -119,12 +119,12 @@ inclusive_or_expression
 	| inclusive_or_expression '|' exclusive_or_expression
 	;
 
-// logical_and_expression -> Result<AstNode, ()>:
+// LogincalAndExpression -> Result<Vec<AstNode>, ()>:
 logical_and_expression
 	: inclusive_or_expression
 	| logical_and_expression AND_OP inclusive_or_expression
 	;
-// logical_or_expression -> Result<AstNode, ()>:
+// LogincalOrExpression -> Result<Vec<AstNode>, ()>:
 logical_or_expression
 	: logical_and_expression
 	| logical_or_expression OR_OP logical_and_expression
