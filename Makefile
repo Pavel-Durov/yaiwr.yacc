@@ -14,3 +14,6 @@ lint:
 test:
 	cargo test
 	cargo test --release
+
+run-test-prog:
+	RUST_LOG=debug cargo run "$(cat ./programs/test.yaiwr)"

@@ -1,0 +1,12 @@
+let a = 77; 
+let b = 123;
+
+fun a (arg1){
+    return arg1 + 1;
+}
+
+fun b (arg1){
+    return arg1 + 1;
+}
+
+println(b(1)); // expected 3
